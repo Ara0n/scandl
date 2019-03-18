@@ -1,0 +1,7 @@
+©2019 Thomas MONTERO  
+All right reserved  
+
+Lib used:  
+- JPEG Factory (https://github.com/lumpchen/pdfbox_ua/blob/master/pdfbox-2.0.0-RC1/pdfbox/src/main/java/org/apache/pdfbox/pdmodel/graphics/image/JPEGFactory.java) by John Hewson under Apache 2  
+- Selenium (https://www.seleniumhq.org) under Apache 2  
+- PDFBox (https://pdfbox.apache.org/) under Apache 2  
