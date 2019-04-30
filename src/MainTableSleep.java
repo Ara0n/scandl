@@ -1,17 +1,19 @@
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 import javax.imageio.IIOException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class MainTableSleep {
 	public static void main(String[] args) {
 		if (!(args.length == 3 || args.length == 4)) {
 			System.out.println("Command need three arguments (and a 4th optional delay):\n" +
-					"1) -f or -d to fetch or download the source images (an optional u to download a unique chapter)\n" +
+					"1) -f or -d to fetch or download the source images (an optional u to download a unique chapter and h for headless mode)\n" +
 					"2) link to the first page of the scan\n" +
 					"3) folder to store the sources and the pdf\n" +
 					"4) delay between each image (in ms) fetch/download, add some if bad connection (default 50ms)");
@@ -24,9 +26,10 @@ public class MainTableSleep {
 
 		String startScan = args[1];
 		String path = args[2];
-		WebDriver driver = new FirefoxDriver();
 		WebElement nextChapter;
 		WebElement nextPage;
+		WebDriver driver;
+		FirefoxOptions option = new FirefoxOptions();
 		List<WebElement> scanPage = null;
 		String urlScanPage;
 		String title = null;
@@ -34,7 +37,7 @@ public class MainTableSleep {
 		CreatePDF pdf;
 		List<String> notFound404 = new ArrayList<>();
 		boolean saveNo404;
-		boolean downloadImage;
+		boolean downloadImage = false;
 		boolean pageLoop;
 		boolean chapterLoop = true;
 		int delay = 50;
@@ -47,26 +50,26 @@ public class MainTableSleep {
 			delay = Integer.parseInt(args[3]);
 		}
 
-		switch (args[0]) {
-			case "-f":
+		if (args[0].length() < 5 && args[0].length() > 1 && args[0].charAt(0) == '-' && args[0].matches("^-[fduh]*$")) {
+			if (args[0].contains("f")) {
 				downloadImage = false;
-				break;
-			case "-d":
+			} else if (args[0].contains("d")) {
 				downloadImage = true;
-				break;
-			case "-fu":
-				downloadImage = false;
+			}
+
+			if (args[0].contains("u")) {
 				chapterLoop = false;
-				break;
-			case "-du":
-				downloadImage = true;
-				chapterLoop = false;
-				break;
-			default:
-				downloadImage = false;
-				System.out.println("first argument needs to be either -f or -d to fetch or download the source images ! (u for optional unique download)");
-				System.exit(3);
+			}
+			if (args[0].contains("h")) {
+				option.setHeadless(true);
+			}
+		} else {
+			downloadImage = false;
+			System.out.println("first argument needs to be either -f or -d to fetch or download the source images ! (u for optional unique download and h for optional headless mode)");
+			System.exit(3);
 		}
+
+		driver = new FirefoxDriver(option);
 
 		try {
 			driver.get(startScan);
